@@ -12,8 +12,8 @@ class CreateDetailsTable extends Migration {
 			$table->increments("id");
 			$table->integer('date_id')->unsigned();
 			$table->foreign('date_id')->references('id')->on('dates');
-			$table->date("from");
-			$table->date("to");
+			$table->integer("from");
+			$table->integer("to");
 			$table->string("tagName");
 			$table->string("tagColor");
 		});

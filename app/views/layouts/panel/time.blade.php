@@ -9,11 +9,14 @@
 	<div ng-app="TimeApp" ng-controller="TimeController" id="scope">
 		<div class="hidden">
 				<span id="user_id">{{$id}}</span>
-				<span id="url">{{URL::to("/tags")}}</span>
+				<span id="url">{{URL::to("/")}}</span>
 		</div>
 		<div class="right">	
 			<div class="box" style="background:((tag.color));" data-tag="((tag.tagName))" data-color="((tag.color))" draggable="true" ondragstart="startDrag(this,event)" ng-repeat="tag in tagList" onD>
 				<i class="fa fa-tag"></i>&nbsp;&nbsp;((tag.tagName))
+			</div>
+			<div class="box" ng-show="timeList.length">
+				<button class="btn btn-success" style="font-family:Lato"  ng-click="sendData()">Send</button>
 			</div>
 		</div>
 		<div class="col-lg-5 form-horizontal">
@@ -22,7 +25,7 @@
 			  <input type="text" class="form-control" id="datepicker" placeholder="Pick a date"/>
 			</div>
 		</div>
-		<table class="table table-striped table-hover widthControl">
+		<table class="table table-striped table-hover widthControl" ng-show="timeList.length">
 		  <thead>
 		    <tr>
 		      <th style="text-align:center">Duration</th>
