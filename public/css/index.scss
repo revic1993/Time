@@ -1,0 +1,36 @@
+$headerSize:90px;
+$full:100%;
+$zero:0;
+$primary:#2C3E50;
+$inverse:#18BC9C;
+$neutral:#ffffff;
+
+@font-face{
+	font-family: lato-regular;
+    src: url("../fonts/Lato-Regular.ttf");
+}
+
+body{
+	margin:$zero;
+	padding:$zero;
+
+	color:$inverse;	
+	overflow-x:hidden;
+}
+
+
+header{
+width:$full;
+background:$primary;
+text-align:center;
+font-size:30px;
+padding:25px;
+color:$neutral;
+font-family:lato-regular;
+ letter-spacing:1px;
+ // box-shadow: $zero 2px 4px hsla(0,0%,0%,0.5);
+}
+
+.container{
+	margin-top:100px;
+}
