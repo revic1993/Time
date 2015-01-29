@@ -24,6 +24,13 @@
 			<div class="col-lg-9">
 			  <input type="text" class="form-control" id="datepicker" placeholder="Pick a date"/>
 			</div>
+			<div class="col-lg-12" style="color:white">asdfaf</div>
+			<div class="col-lg-12">
+				<div class="alert alert-dismissable alert-danger" ng-show="errors.isError">
+				  <button type="button" class="close" data-dismiss="alert" ng-click="removeError()">×</button>
+				  <strong>Oh snap!</strong> ((errors.msg))
+				</div>
+			</div>
 		</div>
 		<table class="table table-striped table-hover widthControl" ng-show="timeList.length">
 		  <thead>
@@ -38,13 +45,20 @@
 		    </tr>
 		  </tbody>
 		</table>
+		<div class="pieChart">
+			<div id="chartdiv" style="width: 100%; height: 400px; background-color: #ffffff;" ></div>
+		</div>
+
 	</div>
+
 @stop
 
 @section("extrascripts")
 {{HTML::script("js/angular.js")}}
 {{HTML::script("js/time.js")}}
 {{HTML::script("js/bootstrap-datetimepicker.js")}}
+{{HTML::script("js/chart.js")}}
+
 <script type="text/javascript">
 	$('#datepicker').datepicker({
   	format: 'yyyy-mm-dd',
@@ -53,5 +67,6 @@
 }).on("changeDate", function(e){
       	changeScopeVal(e.target.value) ;
     });
+
 </script>
 @stop

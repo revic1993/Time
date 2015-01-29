@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateAbstractTable extends Migration {
+class CreateAbstractsTable extends Migration {
 
 	
 	public function up()
@@ -12,10 +12,8 @@ class CreateAbstractTable extends Migration {
 			$table->increments("id");
 			$table->integer('date_id')->unsigned();
 			$table->foreign('date_id')->references('id')->on('dates');
-			$table->integer('user_id')->unsigned();
-			$table->foreign('user_id')->references('id')->on('users');
-			$table->integer('tag_id')->unsigned();
-			$table->foreign('tag_id')->references('id')->on('tags');
+			$table->string("tagName");
+			$table->string("tagColor");
 			$table->integer("hours");
 		});
 	}

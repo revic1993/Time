@@ -6,7 +6,7 @@ var app = angular.module('TimeApp', [], function($interpolateProvider) {
 			initialColor : "#18BC9C",
 			currentTag : "",
 			scope:null
-};		
+		};		
 
 app.controller("TimeController",["$scope","$http",function($scope,$http){
 	current.scope = $scope;
@@ -18,25 +18,10 @@ app.controller("TimeController",["$scope","$http",function($scope,$http){
 	$scope.id= document.getElementById("user_id").innerHTML;	
 	$scope.counter = 0;
 	$scope.date = null;
-
-	$scope.initTime = function(start){
-		console.log(start);
-		for(var i=start;i<=24;i++)
-		{
-			var time= {
-			 			from : (i%12)?i%12:12,
-			 			to : ((i+1)%12)?(i+1)%12:12,
-			 			ftZone:(i<12)?"a.m.":"p.m",
-			 			ttZone:((i+1)<12)?"a.m.":"p.m",
-			 			isTag : false,
-		 	 			tag : "",
-			 			tagColor : current.initialColor,
-			 			index:i
-			 		  }
-			 root.timeList.push(time);
-		}
+	$scope.errors = {
+		isError :false,
+		msg : "",
 	}
-
 
 
 	$scope.fetchTags = function(){
@@ -45,12 +30,12 @@ app.controller("TimeController",["$scope","$http",function($scope,$http){
 			  success(function(data, status, headers, config) {
 		    		root.tagList = data;		    	
 		    		var temp = {
-		    			color:"#18bc9c",
-		    			tagId:0,
+		    			color:"#18bc9c",		    			
 		    			tagName:"empty"
 		    		};
 		    		root.tagList.push(temp);
-		    		root.currentTag = root.tagList;		    		    	   
+		    		root.currentTag = root.tagList;	
+
  		    }).error(function(data, status, headers, config) {
  					console.log(data);
  		});
@@ -61,40 +46,43 @@ app.controller("TimeController",["$scope","$http",function($scope,$http){
 				data:{
 						time: root.timeList,
 						user_id: root.id,
-						date: root.date
+						date: root.date,
+						count:root.counter
 					}
 			};
+			// console.dir(postData);
 			$http.post(root.postUrl+"/dashboard/dates",postData).
-			  success(function(data, status, headers, config) {		  		  
-		  		  	console.log(data);		  
- 		    }).error(function(data, status, headers, config) {
+			  	success(function(data, status, headers, config) {		  		  
+		  		  	root.timeList.forEach(function(time){
+		  		  		time.isSaved = time.isTag;
+		  		  	});	 
+		  		  	console.log(data); 
+ 		    	}).error(function(data, status, headers, config) {
  					console.log(data);
- 		});
+ 				});
 
 	}
 
 	$scope.fetchDetails = function(value){
 		var getUrl = root.postUrl+"/dashboard/date/"+root.id+"/"+value;
+		root.timeList = new Array();
 		$http.get(getUrl).
-			  success(function(data, status, headers, config) {
+			  success(function(data, status, headers, config) {		  		
+		  		root.timeList = data.data;		  		  	
+		  		root.counter = data.count;
 		  		console.log(data);
-		  		 if(data.error && data.message=="empty")
-		  		  {
-		  		  	
-		  		  	root.initTime(1);
-		  		  }  
-		  		  else{
-		  		  		root.timeList = data.data;
-		  		  		console.log(root.timeList[root.timeList.length-1].index+1);
-		  		  		root.initTime(root.timeList[root.timeList.length-1].index+1);
-		  		  }
  		    }).error(function(data, status, headers, config) {
- 					console.log(data);
+ 					root.errors.isError =true;
+ 					root.errors.msg = data.msg;
  		});
 	};
-	$scope.clicked = function(){
-		console.log(document.getElementById("datepicker").value+" "+$scope.date);
+
+	$scope.removeError = function(){
+		root.errors.isError =false;
+		root.errors.msg = "";
 	};
+
+
 	$scope.fetchTags();
 }]);
 
@@ -104,21 +92,24 @@ function dragOver(e)
 	var ind = e.toElement.parentElement.dataset.index;
 	var tag = current.scope.timeList[ind-1];
 	var currTag = current.currentTag;
-	if(!tag.isTag&&tag.tagColor==current.initialColor){
+	// console.log(tag.index + " " +current.currentTag.tagName);
+	if(!tag.isTag&&tag.tagColor==current.initialColor&&current.currentTag.tagName!="empty"){
 		    current.scope.$apply(function(){
 			tag.isTag =true;
 			tag.tagColor = currTag.tagColor;
-			tag.tag = currTag.tagName;	
+			tag.tag = currTag.tagName;			
+			current.scope.counter++;	
 		});
 		
-	}else if(tag.isTag&&currTag.tagColor.toUpperCase()==current.initialColor){
-		 current.scope.$apply(function(){
+	}else if(tag.isTag&&current.currentTag.tagName=="empty"){
+		    current.scope.$apply(function(){
 			tag.isTag =false;
 			tag.tagColor = current.initialColor;
-			tag.tag ="";	
+			tag.tag = "";	
+			current.scope.counter--;	
 		});
 	}else if(tag.isTag){
-		current.scope.$apply(function(){
+			current.scope.$apply(function(){
 			tag.isTag =true;
 			tag.tagColor = currTag.tagColor;
 			tag.tag = currTag.tagName;	
@@ -138,7 +129,7 @@ function startDrag(div,event){
 
 function changeScopeVal(value){
 	 current.scope.$apply(function(){
-	 		current.scope.date = value;
-			current.scope.fetchDetails(value);
-		});
+	 	current.scope.date = value;
+		current.scope.fetchDetails(value);
+	});
 }
